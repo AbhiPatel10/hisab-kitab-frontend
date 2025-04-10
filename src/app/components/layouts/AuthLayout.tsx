@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/app/hooks/useAuth';
-import Navbar from '../navbar';
+// import { useAuth } from '@/app/hooks/useAuth';
+// import Navbar from '../navbar';
 
 interface Props {
     children: React.ReactNode;
@@ -30,7 +30,9 @@ const AuthLayout: React.FC<Props> = ({ children }) => {
     return (
         <>
             {/* {isLoggedIn && <Navbar />} */}
-            <main>{children}</main>
+            <Suspense fallback={<div>Loading transactions...</div>}>
+                <main>{children}</main>
+            </Suspense>
         </>
     );
 };

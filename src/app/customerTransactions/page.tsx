@@ -3,7 +3,7 @@
 import { deleteCustomerTransaction, getAllCustomerTransactions } from "@/services/transactionService";
 import { CustomerTransactionType } from "@/types/types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { ConfirmModal } from "../components/ConfirmModal";
 import Navbar from "../components/navbar";
 
@@ -32,7 +32,7 @@ export default function CustomerTransactions() {
         } else {
             router.push("/")
         }
-    }, [customerId]);
+    }, [customerId, router]);
 
     const handleConfirmDelete = async () => {
         if (!selectedCustomerId) return;
@@ -54,6 +54,7 @@ export default function CustomerTransactions() {
     };
 
     return (
+        <Suspense fallback={<div>Loading...</div>}>
         <div>
             <Navbar />
             <div className="flex justify-between items-center max-w-[800px] mx-auto my-[30px]">
@@ -133,5 +134,6 @@ export default function CustomerTransactions() {
                 text="Are you sure you want to delete this transaction?"
             />
         </div >
+        </Suspense>
     )
 }

@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+// import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const Navbar = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
+    // const [menuOpen, setMenuOpen] = useState(false);
 
     const router = useRouter();
 
@@ -20,7 +21,7 @@ const Navbar = () => {
         <nav className="bg-white border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
-                    <img src="https://flowbite.com/docs/images/logo.svg" alt="Flowbite Logo" width={32} height={32} />
+                    <Image src="https://flowbite.com/docs/images/logo.svg" alt="Flowbite Logo" width={32} height={32} />
                     <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
                 </Link>
 
@@ -31,7 +32,7 @@ const Navbar = () => {
                         onClick={() => setDropdownOpen(!dropdownOpen)}
                     >
                         <span className="sr-only">Open user menu</span>
-                        <img
+                        <Image
                             width={32}
                             height={32}
                             className="w-8 h-8 rounded-full"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { createTransaction, getTransactionById, updateTransaction } from '@/services/transactionService';
@@ -117,69 +117,71 @@ export default function Transaction() {
     };
 
     return (
-        <div>
-            <Navbar />
-            <div className="flex justify-center items-center max-w-[700px] mx-auto my-[30px]">
-                <h1 className="text-4xl text-gray-800">{transactionId ? 'Edit Entry' : 'Add Entry'}</h1>
-            </div>
+        <Suspense fallback={<div>Loading...</div>}>
+            <div>
+                <Navbar />
+                <div className="flex justify-center items-center max-w-[700px] mx-auto my-[30px]">
+                    <h1 className="text-4xl text-gray-800">{transactionId ? 'Edit Entry' : 'Add Entry'}</h1>
+                </div>
 
-            <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
-                {['start', 'stop', 'rate'].map((field) => (
-                    <div key={field} className="mb-5">
-                        <label htmlFor={field} className="block mb-2 text-sm font-medium text-gray-900">
-                            {field.charAt(0).toUpperCase() + field.slice(1)}
-                        </label>
-                        <input
-                            type="number"
-                            id={field}
-                            value={form[field as keyof TransactionForm] ?? ''}
-                            onChange={handleChange}
+                <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
+                    {['start', 'stop', 'rate'].map((field) => (
+                        <div key={field} className="mb-5">
+                            <label htmlFor={field} className="block mb-2 text-sm font-medium text-gray-900">
+                                {field.charAt(0).toUpperCase() + field.slice(1)}
+                            </label>
+                            <input
+                                type="number"
+                                id={field}
+                                value={form[field as keyof TransactionForm] ?? ''}
+                                onChange={handleChange}
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                placeholder={`Enter ${field}`}
+                            />
+                            {errors[field as keyof TransactionForm] && (
+                                <p className="text-red-500 text-sm mt-1">{errors[field as keyof TransactionForm]}</p>
+                            )}
+                        </div>
+                    ))}
+
+                    <div className="mb-5">
+                        <label htmlFor="date" className="block mb-2 text-sm font-medium text-gray-900">Date</label>
+                        <DatePicker
+                            selected={form.date ? new Date(form.date) : null}
+                            onChange={(date: Date | null) => {
+                                setForm(prev => ({
+                                    ...prev,
+                                    date: date ? date.toISOString() : ''
+                                }));
+                            }}
+                            dateFormat="dd/MM/yyyy"
                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                            placeholder={`Enter ${field}`}
+                            placeholderText="Select a date"
                         />
-                        {errors[field as keyof TransactionForm] && (
-                            <p className="text-red-500 text-sm mt-1">{errors[field as keyof TransactionForm]}</p>
-                        )}
+                        {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
                     </div>
-                ))}
 
-                <div className="mb-5">
-                    <label htmlFor="date" className="block mb-2 text-sm font-medium text-gray-900">Date</label>
-                    <DatePicker
-                        selected={form.date ? new Date(form.date) : null}
-                        onChange={(date: Date | null) => {
-                            setForm(prev => ({
-                                ...prev,
-                                date: date ? date.toISOString() : ''
-                            }));
-                        }}
-                        dateFormat="dd/MM/yyyy"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                        placeholderText="Select a date"
-                    />
-                    {errors.date && <p className="text-red-500 text-sm mt-1">{errors.date}</p>}
-                </div>
+                    <div className="mb-5">
+                        <label htmlFor="crop" className="block mb-2 text-sm font-medium text-gray-900">Crop</label>
+                        <input
+                            type="text"
+                            id="crop"
+                            value={form.crop}
+                            onChange={handleChange}
+                            placeholder="Enter crop"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                        />
+                        {errors.crop && <p className="text-red-500 text-sm mt-1">{errors.crop}</p>}
+                    </div>
 
-                <div className="mb-5">
-                    <label htmlFor="crop" className="block mb-2 text-sm font-medium text-gray-900">Crop</label>
-                    <input
-                        type="text"
-                        id="crop"
-                        value={form.crop}
-                        onChange={handleChange}
-                        placeholder="Enter crop"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                    />
-                    {errors.crop && <p className="text-red-500 text-sm mt-1">{errors.crop}</p>}
-                </div>
-
-                <button
-                    type="submit"
-                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-                >
-                    {loading ? 'Saving...' : (transactionId ? 'Update' : 'Submit')}
-                </button>
-            </form>
-        </div>
+                    <button
+                        type="submit"
+                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                    >
+                        {loading ? 'Saving...' : (transactionId ? 'Update' : 'Submit')}
+                    </button>
+                </form>
+            </div>
+        </Suspense>
     );
 }
